@@ -6,7 +6,7 @@ Aplikasi Streamlit untuk:
 - Laporan & ekspor data CSV
 - Highlight otomatis keterlambatan berdasarkan SOP
 
-## 🚀 Deploy via Streamlit Cloud
+##  Deploy via Streamlit Cloud
 
 1. Fork atau clone repository ini
 2. Buka https://share.streamlit.io (Streamlit Cloud)
@@ -17,6 +17,4 @@ Aplikasi Streamlit untuk:
 7. Pilih file utama → `app.py`
 
 Aplikasi akan otomatis live dalam beberapa menit.
-
-## 📂 Struktur Folder
 
