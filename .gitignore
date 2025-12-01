@@ -1,0 +1,5 @@
+sim-kelengkapan-berkas.json
+*.json
+__pycache__/
+*.pyc
+.env
