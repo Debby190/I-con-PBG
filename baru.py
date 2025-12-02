@@ -388,7 +388,7 @@ class PBGMonitoringApp:
             df_priority = self.df[self.df["STATUS"].isin(["Terlambat", "Diproses"])].copy()
             
             # Sort: Terlambat dulu, lalu tanggal terbaru
-            df_priority["sort_priority"] = df_priority["STATUS"].map({"Terlambat": 1, "Diproses": 2})
+            df_priority["sort_priority"] = df_priority["STATUS"].map({"Diproses": 1, "Terlambat": 2})
             df_sorted = df_priority.sort_values(["sort_priority", "TGL REGISTRASI"], ascending=[True, False]).head(5)
             
             if len(df_sorted) == 0:
@@ -1139,6 +1139,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
