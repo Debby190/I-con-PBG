@@ -320,7 +320,7 @@ class PBGMonitoringApp:
             st.markdown("""
             <div class="chart-card">
                 <h3>📊 Distribusi Status Permohonan</h3>
-                <p>style = "margin-bottom: 0;">Proporsi berdasarkan status terkini</p>
+                <p>Proporsi berdasarkan status terkini</p>
             </div>
             """, unsafe_allow_html=True)
             
@@ -1087,7 +1087,6 @@ st.markdown("""
     font-size: 22px !important;  /* sebelumnya 16px–18px */
     font-weight: 700 !important;
     color: #1e293b !important;
-    min-height: 460px !important;
 }
 
 /* Info Box */
@@ -1159,6 +1158,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
