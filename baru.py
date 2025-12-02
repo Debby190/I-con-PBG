@@ -352,7 +352,7 @@ class PBGMonitoringApp:
             
             fig.update_layout(
                 showlegend=False,
-                height=430,
+                height=390,
                 margin=dict(t=10, b=10, l=10, r=10),
                 paper_bgcolor='white',
                 plot_bgcolor='white',
@@ -1158,6 +1158,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
