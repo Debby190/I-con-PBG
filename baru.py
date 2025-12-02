@@ -370,7 +370,6 @@ class PBGMonitoringApp:
             )
             
             st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-            
         
         # === KOLOM KANAN: AKTIVITAS TERBARU ===
         with col_activity:
@@ -380,16 +379,25 @@ class PBGMonitoringApp:
                 <p>Permohonan yang perlu perhatian</p>
             </div>
             """, unsafe_allow_html=True)
-            
+            if "TGL REGISTRASI" not in self.df.columns:
             # Filter data: prioritaskan Terlambat, lalu Diproses
-            self.df["TGL REGISTRASI"] = pd.to_datetime(self.df["TGL REGISTRASI"], errors="coerce")
+                self.df["TGL REGISTRASI"] = ""
+
+            self.df["TGL REGISTRASI"] = pd.to_datetime(
+                self.df["TGL REGISTRASI"], 
+                errors="coerce",
+                dayfirst=True
+            )
             
             # Ambil data terlambat dan diproses saja
             df_priority = self.df[self.df["STATUS"].isin(["Terlambat", "Diproses"])].copy()
             
             # Sort: Terlambat dulu, lalu tanggal terbaru
             df_priority["sort_priority"] = df_priority["STATUS"].map({"Diproses": 1, "Terlambat": 2})
-            df_sorted = df_priority.sort_values(["sort_priority", "TGL REGISTRASI"], ascending=[True, False]).head(5)
+            df_sorted = df_priority.sort_values(
+                ["sort_priority", "TGL REGISTRASI"], 
+                ascending=[True, False]
+                ).head(5)
             
             if len(df_sorted) == 0:
                 st.markdown("""
@@ -411,7 +419,10 @@ class PBGMonitoringApp:
                     
                     # Format tanggal
                     if pd.notna(tgl_reg):
-                        tgl_formatted = tgl_reg.strftime("%d/%m/%Y")
+                        try:
+                            tgl_formatted = tgl_reg.strftime("%d/%m/%Y")
+                        except:
+                            tgl_formatted = "-"
                     else:
                         tgl_formatted = "-"
                     
@@ -499,7 +510,6 @@ class PBGMonitoringApp:
                     """, unsafe_allow_html=True)
                 
                 st.markdown('</div>', unsafe_allow_html=True)
-
     def render_pencarian(self):
         """Render halaman pencarian"""
         st.markdown("""
@@ -1139,6 +1149,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
