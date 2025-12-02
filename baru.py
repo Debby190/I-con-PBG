@@ -175,18 +175,17 @@ class PBGMonitoringApp:
     def get_statistics(self) -> Dict:
         """Hitung statistik utama"""
         if self.df.empty:
-            return {}
+            return {"total": 0, "selesai": 0, "diproses": 0, "terlambat": 0}
             
-        total_permohonan = len(self.df)
-        permohonan_selesai = len(self.df[self.df["STATUS"] == "Tepat waktu"])
-        permohonan_diproses = len(self.df[self.df["STATUS"] == "Diproses"])
-        permohonan_terlambat = len(self.df[self.df["STATUS"] == "Terlambat"])
+        if "STATUS" not in self.df.columns:
+            return {"total": len(self.df), "selesai": 0, "diproses": 0, "terlambat": 0}
         
+        total = len(self.df)
         return {
-            "total": total_permohonan,
-            "selesai": permohonan_selesai,
-            "diproses": permohonan_diproses,
-            "terlambat": permohonan_terlambat
+            "total": total,
+            "selesai": len(self.df[self.df["STATUS"] == "Tepat waktu"]),
+            "diproses": len(self.df[self.df["STATUS"] == "Diproses"]),
+            "terlambat": len(self.df[self.df["STATUS"] == "Terlambat"])
         }
 
     def render_sidebar(self):
@@ -801,9 +800,12 @@ class PBGMonitoringApp:
         """Jalankan aplikasi utama"""
         # Load data
         self.df = self.load_data()
-        if self.df.empty:
-            st.error("❌ Tidak dapat memuat data. Aplikasi dihentikan.")
-            st.stop()
+        if "STATUS" not in self.df.columns:
+            self.df["STATUS"] = self.df.apply(self.hitung_status, axis=1)
+        else:
+            # Jika ada tapi kosong, regenerasi
+            if self.df["STATUS"].isna().all() or (self.df["STATUS"] == "").all():
+                self.df["STATUS"] = self.df.apply(self.hitung_status, axis=1)
         
         # Render komponen
         self.render_sidebar()
@@ -1137,6 +1139,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
