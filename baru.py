@@ -695,9 +695,9 @@ class PBGMonitoringApp:
             <div class="info-box">
                 📊 <strong>Info Data Monitoring:</strong><br>
                 <strong>Total: {total_data_monitoring} permohonan</strong> | 
-                <span style="color: #10b981; font-weight: 600;">✅ Tepat Waktu: {tepat_waktu} ({pct_tepat:.1f}%)</span> | 
-                <span style="color: #f59e0b; font-weight: 600;">⏳ Diproses: {diproses} ({pct_diproses:.1f}%)</span> | 
-                <span style="color: #ef4444; font-weight: 600;">⚠️ Terlambat: {terlambat} ({pct_terlambat:.1f}%)</span>
+                <span style="color: #10b981; font-weight: 600;"> Tepat Waktu: {tepat_waktu} ({pct_tepat:.1f}%)</span> | 
+                <span style="color: #f59e0b; font-weight: 600;"> Diproses: {diproses} ({pct_diproses:.1f}%)</span> | 
+                <span style="color: #ef4444; font-weight: 600;"> Terlambat: {terlambat} ({pct_terlambat:.1f}%)</span>
             </div>
             """, unsafe_allow_html=True)
 
@@ -1158,6 +1158,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
