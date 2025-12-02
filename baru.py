@@ -352,7 +352,7 @@ class PBGMonitoringApp:
             
             fig.update_layout(
                 showlegend=False,
-                height=320,
+                height=430,
                 margin=dict(t=10, b=10, l=10, r=10),
                 paper_bgcolor='white',
                 plot_bgcolor='white',
@@ -1082,6 +1082,14 @@ st.markdown("""
     border-bottom: none;
 }
 
+.chart-card h3,
+.activity-card-header h3 {
+    font-size: 22px !important;  /* sebelumnya 16px–18px */
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    min-height: 460px !important;
+}
+
 /* Info Box */
 .info-box {
     background: #f0f9ff;
@@ -1138,7 +1146,9 @@ st.markdown("""
 }
 </style>
 <script>
-document.body.style.zoom = "0.75";   
+document.body.style.zoom = "0.75"; 
+document.body.style.transform = "scale(0.75)";
+document.body.style.transformOrigin = "0 0";
 </script>
 """, unsafe_allow_html=True)
 
@@ -1149,6 +1159,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
