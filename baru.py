@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2.service_account import Credentials
 from datetime import datetime, timedelta
 import plotly.express as px
 import plotly.graph_objects as go
@@ -65,18 +65,18 @@ class PBGMonitoringApp:
 
     def load_data(_self):
         scope = [
-            "https://spreadsheets.google.com/feeds",
+            "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive"
         ]
 
         creds_info = st.secrets["google_credentials"]
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_info, scope)
+        creds = Credentials.from_service_account_info(creds_info, scopes=scope)
 
         client = gspread.authorize(creds)
         sheet = client.open_by_key("1LEKCe-bbye_mPx9pH-w22LOE95MqFD3ZEp5rLQoqVxg").sheet1
+
         df = pd.DataFrame(sheet.get_all_records())
         return df
-
 
     def hitung_status(self, row):
         """Hitung status permohonan berdasarkan tahapan"""
@@ -1642,4 +1642,5 @@ document.body.style.zoom = "0.75";
 # ================================
 if __name__ == "__main__":
     app = PBGMonitoringApp()
+
     app.run()
