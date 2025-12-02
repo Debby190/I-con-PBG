@@ -1,7 +1,6 @@
 streamlit
 pandas
 gspread
-oauth2client
+google-auth
 numpy
 plotly
-io
