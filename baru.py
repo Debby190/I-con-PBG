@@ -41,28 +41,6 @@ class PBGMonitoringApp:
         self.load_data()
         
     @st.cache_data(ttl=300)
-    # def load_data(_self):
-    #     """Load data dari Google Sheets"""
-    #     try:
-    #         scope = [
-    #             "https://spreadsheets.google.com/feeds",
-    #             "https://www.googleapis.com/auth/drive"
-    #         ]
-    #         creds = ServiceAccountCredentials.from_json_keyfile_name(
-    #             "sim-kelengkapan-berkas.json", 
-    #             scope
-    #         )
-    #         client = gspread.authorize(creds)
-    #         sheet = client.open_by_key("1LEKCe-bbye_mPx9pH-w22LOE95MqFD3ZEp5rLQoqVxg").sheet1
-    #         df = pd.DataFrame(sheet.get_all_records())
-            
-    #         # Hitung status untuk setiap row
-    #         df["STATUS"] = df.apply(_self.hitung_status, axis=1)
-    #         return df
-    #     except Exception as e:
-    #         st.error(f"❌ Gagal memuat data: {e}")
-    #         return pd.DataFrame()
-
     def load_data(_self):
         scope = [
             "https://www.googleapis.com/auth/spreadsheets",
@@ -142,57 +120,6 @@ class PBGMonitoringApp:
                 return "Diproses"
         except:
             return "Diproses"
-
-    # def highlight_terlambat(self, row): 
-    #     """Highlight kolom terlambat berdasarkan SOP tahapan dengan logika:
-    #        setiap tahap dihitung dari tanggal tahap sebelumnya.
-    #     """
-
-    #     styles = [''] * len(row)
-
-    #     tahapan = list(self.SOP_TAHAPAN.keys())
-    #     prev_date = None  # tanggal tahap sebelumnya
-
-    # # Ambil tanggal registrasi sebagai tahap awal
-    #     if "TGL REGISTRASI" in row.index and pd.notna(row["TGL REGISTRASI"]):
-    #         try:
-    #             prev_date = pd.to_datetime(row["TGL REGISTRASI"], dayfirst=True)
-    #         except:
-    #             prev_date = None
-
-    #     for tahap in tahapan:
-    #         if tahap not in row.index:
-    #             continue
-
-    #         col_idx = row.index.get_loc(tahap)
-    #         sop_hari = self.SOP_TAHAPAN[tahap]
-    #         nilai = str(row[tahap]).strip()
-
-    #     # Jika isi "-" → skip tahap tapi prev_date TIDAK berubah
-    #         if nilai == "-" or nilai == "":
-    #             continue
-
-    #     # Parse tanggal tahap sekarang
-
-    #         try:
-    #             curr_date = pd.to_datetime(nilai, dayfirst=True)
-    #         except:
-    #             continue
-
-    #     # Hitung selisih hari dari tahap sebelumnya
-    #         if prev_date is not None:
-    #             selisih = (curr_date - prev_date).days
-    #         else:
-    #             selisih = 0
-
-    #     # Jika selisih melebihi SOP → beri highlight merah
-    #         if selisih > sop_hari:
-    #             styles[col_idx] = 'background-color: #fee2e2; color: #dc2626; font-weight: bold'
-
-    #     # Update prev_date ke tanggal tahap ini (valid)
-    #         prev_date = curr_date
-
-    #     return styles
 
     def highlight_terlambat(self, row):
         """Highlight berdasarkan SOP:
@@ -333,263 +260,6 @@ class PBGMonitoringApp:
     </div>
 </div>
 """, unsafe_allow_html=True)
-
-    # def render_beranda(self):
-    #     """Render halaman beranda"""
-    #     st.markdown("""
-    #     <div class="page-title-card">
-    #         <h2>📊 Dashboard Beranda</h2>
-    #         <p>Ringkasan dan overview status permohonan PBG</p>
-    #     </div>
-    #     """, unsafe_allow_html=True)
-        
-    #     stats = self.get_statistics()
-        
-    #     # Metric Cards - 4 kolom
-    #     col1, col2, col3, col4 = st.columns(4)
-        
-    #     with col1:
-    #         st.markdown(f"""
-    #         <div class="metric-card" style="border-left-color: #3b82f6;">
-    #             <div class="metric-icon">📋</div>
-    #             <div class="metric-value" style="color: #3b82f6;">{stats.get('total', 0)}</div>
-    #             <div class="metric-label">Total Permohonan</div> 
-    #        </div>
-    #         """, unsafe_allow_html=True)
-
-    #     with col2:
-    #         st.markdown(f"""
-    #         <div class="metric-card" style="border-left-color: #f59e0b;">
-    #             <div class="metric-icon">⏳</div>
-    #             <div class="metric-value" style="color: #f59e0b;">{stats.get('diproses', 0)}</div>
-    #             <div class="metric-label">Sedang Diproses</div> 
-    #        </div>
-    #         """, unsafe_allow_html=True)
-        
-    #     with col3:
-    #         st.markdown(f"""
-    #         <div class="metric-card" style="border-left-color: #10b981;">
-    #             <div class="metric-icon">✅</div>
-    #             <div class="metric-value" style="color: #10b981;">{stats.get('selesai', 0)}</div>
-    #             <div class="metric-label">Tepat Waktu</div>
-    #        </div>
-    #         """, unsafe_allow_html=True)
-        
-    #     with col4:
-    #         st.markdown(f"""
-    #         <div class="metric-card" style="border-left-color: #ef4444;">
-    #             <div class="metric-icon">⚠️</div>
-    #             <div class="metric-value" style="color: #ef4444;">{stats.get('terlambat', 0)}</div>
-    #             <div class="metric-label">Terlambat</div>
-    #         </div>
-    #         """, unsafe_allow_html=True)
-        
-    #     st.markdown("<br>", unsafe_allow_html=True)
-        
-    #     # Charts Section - 2 kolom
-    #     col_chart, col_activity = st.columns([2, 1])
-        
-    #     # === KOLOM KIRI: PIE CHART ===
-    #     with col_chart:
-    #         st.markdown("""
-    #         <div class="page-title-card">
-    #             <h2>📊 Distribusi Status Permohonan</h2>
-    #             <p>Proporsi berdasarkan status terkini</p>
-    #         </div>
-    #         """, unsafe_allow_html=True)
-            
-    #         status_counts = self.df["STATUS"].value_counts()
-    #         colors = {
-    #             'Tepat waktu': '#10b981',
-    #             'Diproses': '#f59e0b',
-    #             'Terlambat': '#ef4444'
-    #         }
-            
-    #         # Buat custom labels dengan nilai
-    #         custom_labels = [f"{label}<br>{value} ({value/status_counts.sum()*100:.1f}%)" 
-    #                         for label, value in zip(status_counts.index, status_counts.values)]
-            
-    #         fig = go.Figure(data=[go.Pie(
-    #             labels=status_counts.index,
-    #             values=status_counts.values,
-    #             hole=0.55,
-    #             marker=dict(
-    #                 colors=[colors.get(x, '#94a3b8') for x in status_counts.index],
-    #                 line=dict(color='white', width=3)
-    #             ),
-    #             textposition='none',  
-    #             hovertemplate='<b style="font-size:14px">%{label}</b><br>' +
-    #                         'Jumlah: <b>%{value}</b><br>' +
-    #                         'Persentase: <b>%{percent}</b><extra></extra>',
-    #             hoverlabel=dict(
-    #                 bgcolor='white',
-    #                 font=dict(size=13, color='#1e293b', family='Inter'),
-    #                 bordercolor='#e2e8f0'
-    #             )
-    #         )])
-            
-    #         fig.update_layout(
-    #             showlegend=True,
-    #             height=380,
-    #             margin=dict(t=30, b=50, l=30, r=30),
-    #             paper_bgcolor='white',
-    #             plot_bgcolor='white',
-    #             font=dict(family='Inter', size=13, color='#1e293b'),
-    #             legend=dict(
-    #                 orientation="h",
-    #                 yanchor="bottom",
-    #                 y=-0.15,
-    #                 xanchor="center",
-    #                 x=0.5,
-    #                 bgcolor='white',
-    #                 bordercolor='#e2e8f0',
-    #                 borderwidth=1,
-    #                 font=dict(size=13, color='#1e293b', family='Inter'),
-    #                 itemsizing='constant',
-    #                 itemwidth=30
-    #             ),
-    #             annotations=[dict(
-    #                 text=f'<b style="font-size:32px; color:#1e293b">{stats.get("total", 0)}</b><br>' +
-    #                     '<span style="font-size:14px; color:#64748b">Total</span><br>' +
-    #                     '<span style="font-size:14px; color:#64748b">Permohonan</span>',
-    #                 x=0.5,
-    #                 y=0.5,
-    #                 font_size=16,
-    #                 showarrow=False,
-    #                 align='center'
-    #             )]
-    #         )
-            
-    #         # Tambahkan custom legend items dengan angka
-    #         for idx, (label, value) in enumerate(zip(status_counts.index, status_counts.values)):
-    #             pct = value/status_counts.sum()*100
-    #             fig.add_annotation(
-    #                 text=f"<b>{value}</b> ({pct:.1f}%)",
-    #                 xref="paper", yref="paper",
-    #                 x=0.5, y=-0.22 - (idx * 0.04),
-    #                 showarrow=False,
-    #                 font=dict(size=11, color='#64748b'),
-    #                 xanchor='center'
-    #             )
-            
-    #         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-        
-    #     # === KOLOM KANAN: AKTIVITAS TERBARU ===
-    #     with col_activity:
-    #         st.markdown("""
-    #         <div class="page-title-card">
-    #             <h2>📢 Aktivitas Terbaru</h2>
-    #             <p>5 Permohonan terkini</p>
-    #         </div>
-    #         """, unsafe_allow_html=True)
-            
-    #         # Box Aktivitas
-    #         self.df["TGL REGISTRASI"] = pd.to_datetime(self.df["TGL REGISTRASI"], errors="coerce")
-    #         df_sorted = self.df.sort_values("TGL REGISTRASI", ascending=False).head(5)
-            
-    #         st.markdown('<div class="activity-container">', unsafe_allow_html=True)
-            
-    #         for idx, row in df_sorted.iterrows():
-    #             status = row["STATUS"]
-    #             nama_pemohon = row.get("NAMA PEMOHON", "-")
-    #             tgl_reg = row["TGL REGISTRASI"]
-                
-    #             # Format tanggal
-    #             if pd.notna(tgl_reg):
-    #                 tgl_formatted = tgl_reg.strftime("%d/%m/%Y")
-    #             else:
-    #                 tgl_formatted = "-"
-                
-    #             # Icon dan warna berdasarkan status
-    #             if status == "Tepat waktu":
-    #                 icon = "✅"
-    #                 color = "#10b981"
-    #                 bg_color = "#ecfdf5"
-    #                 border_color = "#10b981"
-    #             elif status == "Diproses":
-    #                 icon = "⏳"
-    #                 color = "#f59e0b"
-    #                 bg_color = "#fffbeb"
-    #                 border_color = "#f59e0b"
-    #             else:  # Terlambat
-    #                 icon = "⚠️"
-    #                 color = "#ef4444"
-    #                 bg_color = "#fef2f2"
-    #                 border_color = "#ef4444"
-                
-    #             st.markdown(f"""
-    #             <div class="activity-card" style="
-    #                 background: {bg_color};
-    #                 border-left: 3px solid {border_color};
-    #                 padding: 14px 16px;
-    #                 margin-bottom: 12px;
-    #                 border-radius: 10px;
-    #                 transition: all 0.3s ease;
-    #                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-    #             ">
-    #                 <div style="display: flex; align-items: flex-start; gap: 12px;">
-    #                     <div style="
-    #                         width: 36px;
-    #                         height: 36px;
-    #                         background: white;
-    #                         border-radius: 8px;
-    #                         display: flex;
-    #                         align-items: center;
-    #                         justify-content: center;
-    #                         font-size: 18px;
-    #                         flex-shrink: 0;
-    #                         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
-    #                     ">
-    #                         {icon}
-    #                     </div>
-    #                     <div style="flex: 1; min-width: 0;">
-    #                         <div style="
-    #                             color: #1e293b;
-    #                             font-size: 13px;
-    #                             font-weight: 700;
-    #                             margin-bottom: 4px;
-    #                             white-space: nowrap;
-    #                             overflow: hidden;
-    #                             text-overflow: ellipsis;
-    #                         ">
-    #                             {row['NO. REGISTRASI']}
-    #                         </div>
-    #                         <div style="
-    #                             color: #64748b;
-    #                             font-size: 11px;
-    #                             margin-bottom: 6px;
-    #                             white-space: nowrap;
-    #                             overflow: hidden;
-    #                             text-overflow: ellipsis;
-    #                         ">
-    #                             {nama_pemohon}
-    #                         </div>
-    #                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-    #                             <span style="
-    #                                 background: {color};
-    #                                 color: white;
-    #                                 padding: 3px 10px;
-    #                                 border-radius: 12px;
-    #                                 font-size: 10px;
-    #                                 font-weight: 600;
-    #                                 white-space: nowrap;
-    #                             ">
-    #                                 {status}
-    #                             </span>
-    #                             <span style="
-    #                                 color: #94a3b8;
-    #                                 font-size: 10px;
-    #                                 font-weight: 500;
-    #                             ">
-    #                                 📅 {tgl_formatted}
-    #                             </span>
-    #                         </div>
-    #                     </div>
-    #                 </div>
-    #             </div>
-    #             """, unsafe_allow_html=True)
-            
-    #         st.markdown('</div>', unsafe_allow_html=True)
 
     def render_beranda(self):
         """Render halaman beranda"""
@@ -859,21 +529,6 @@ class PBGMonitoringApp:
                 default=["Tepat waktu", "Diproses", "Terlambat"]
             )
                     
-        # # Filter tambahan
-        # col3, col4 = st.columns(2)
-        # with col3:
-        #     status_filter = st.multiselect(
-        #         "Filter Status:",
-        #         ["Tepat waktu", "Diproses", "Terlambat"],
-        #         default=["Tepat waktu", "Diproses", "Terlambat"]
-        #     )
-        
-        # with col4:
-        #     date_range = st.date_input(
-        #         "Rentang Tanggal Registrasi:",
-        #         [datetime.now() - timedelta(days=30), datetime.now()]
-            # )
-
         # Proses pencarian
         result = self.df.copy()
         
@@ -884,17 +539,6 @@ class PBGMonitoringApp:
             else:
                 result = result[result[search_option].astype(str).str.contains(search_input, case=False, na=False)]
         
-        # Filter status
-        result = result[result["STATUS"].isin(status_filter)]
-        
-        # # Filter tanggal
-        # if len(date_range) == 2:
-        #     result["TGL REGISTRASI"] = pd.to_datetime(result["TGL REGISTRASI"], errors="coerce")
-        #     result = result[
-        #         (result["TGL REGISTRASI"] >= pd.Timestamp(date_range[0])) & 
-        #         (result["TGL REGISTRASI"] <= pd.Timestamp(date_range[1]))
-        #     ]
-
         if result.empty:
             st.warning("⚠️ Tidak ada data yang cocok dengan kriteria pencarian.")
             return
@@ -927,117 +571,6 @@ class PBGMonitoringApp:
             </span>
         </div>
         """, unsafe_allow_html=True)
-
-    # def render_monitoring(self):
-    #     """Render halaman monitoring"""
-    #     st.markdown("""
-    #     <div class="page-title-card">
-    #         <h2>📊 Monitoring & Analisis Permohonan</h2>
-    #         <p>Grafik tren permohonan per periode</p>
-    #     </div>
-    #     """, unsafe_allow_html=True)
-
-    #     if "TGL REGISTRASI" in self.df.columns:
-    #         df_mon = self.df.copy()
-            
-    #         # Konversi tanggal dengan dayfirst=True
-    #         df_mon["TGL REGISTRASI"] = pd.to_datetime(df_mon["TGL REGISTRASI"], dayfirst=True, errors="coerce")
-            
-    #         # Filter hanya yang ada tanggal registrasi
-    #         df_mon = df_mon[df_mon["TGL REGISTRASI"].notna()].copy()
-            
-    #         # Debug: tampilkan jumlah data yang diproses
-    #         st.info(f"ℹ️ Total data yang memiliki tanggal registrasi: **{len(df_mon)}** dari {len(self.df)} permohonan")
-            
-    #         # Buat kolom bulan dalam format YYYY-MM
-    #         df_mon["Bulan"] = df_mon["TGL REGISTRASI"].dt.to_period("M").astype(str)
-            
-    #         # Hitung per bulan dan status (SEMUA STATUS)
-    #         monthly_counts = df_mon.groupby(["Bulan", "STATUS"]).size().reset_index(name="Jumlah")
-            
-    #         # Tambahkan kolom untuk sorting
-    #         monthly_counts["Sort_Date"] = pd.to_datetime(monthly_counts["Bulan"], format="%Y-%m")
-    #         monthly_counts = monthly_counts.sort_values("Sort_Date")
-            
-    #         # # Debug: tampilkan data yang akan diplot
-    #         # st.markdown("### 📋 Data Per Bulan:")
-    #         # st.dataframe(
-    #         #     monthly_counts[["Bulan", "STATUS", "Jumlah"]].sort_values(["Bulan", "STATUS"]),
-    #         #     use_container_width=True,
-    #         #     hide_index=True
-    #         # )
-            
-            
-    #         # Buat grafik dengan semua status
-    #         fig = px.bar(
-    #             monthly_counts,
-    #             x="Bulan",
-    #             y="Jumlah",
-    #             color="STATUS",
-    #             barmode="group",
-    #             color_discrete_map={
-    #                 'Tepat waktu': '#10b981',
-    #                 'Diproses': '#f59e0b',  
-    #                 'Terlambat': '#ef4444'
-    #             },
-    #             text="Jumlah",
-    #             title="Tren Permohonan Bulanan - Semua Status"
-    #         )
-            
-    #         fig.update_traces(textposition='outside', textfont_size=11)
-            
-    #         fig.update_layout(
-    #             height=500,
-    #             font=dict(family='Inter', size=12),
-    #             margin=dict(t=60, b=60, l=60, r=40),
-    #             hovermode='x unified',
-    #             yaxis_title="Jumlah Permohonan",
-    #             xaxis_title="Periode (Bulan-Tahun)",
-    #             legend_title="Status",
-    #             plot_bgcolor='white',
-    #             paper_bgcolor='white',
-    #             showlegend=True,
-    #             legend=dict(
-    #                 orientation="h",
-    #                 yanchor="bottom",
-    #                 y=-0.2,
-    #                 xanchor="center",
-    #                 x=0.5
-    #             )
-    #         )
-            
-    #         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': True})
-            
-    #         # Tampilkan ringkasan detail
-    #         total_data_monitoring = len(df_mon)
-    #         tepat_waktu = len(df_mon[df_mon["STATUS"] == "Tepat waktu"])
-    #         diproses = len(df_mon[df_mon["STATUS"] == "Diproses"])
-    #         terlambat = len(df_mon[df_mon["STATUS"] == "Terlambat"])
-            
-    #         # Hitung persentase
-    #         pct_tepat = (tepat_waktu/total_data_monitoring*100) if total_data_monitoring > 0 else 0
-    #         pct_diproses = (diproses/total_data_monitoring*100) if total_data_monitoring > 0 else 0
-    #         pct_terlambat = (terlambat/total_data_monitoring*100) if total_data_monitoring > 0 else 0
-            
-    #         st.markdown(f"""
-    #         <div class="info-box">
-    #             📊 <strong>Ringkasan Data Monitoring:</strong><br>
-    #             <strong>Total: {total_data_monitoring} permohonan</strong> | 
-    #             <span style="color: #10b981; font-weight: 600;">✅ Tepat Waktu: {tepat_waktu} ({pct_tepat:.1f}%)</span> | 
-    #             <span style="color: #f59e0b; font-weight: 600;">⏳ Diproses: {diproses} ({pct_diproses:.1f}%)</span> | 
-    #             <span style="color: #ef4444; font-weight: 600;">⚠️ Terlambat: {terlambat} ({pct_terlambat:.1f}%)</span>
-    #         </div>
-    #         """, unsafe_allow_html=True)
-            
-    #         # # Tampilkan tabel detail per bulan
-    #         # st.markdown("### 📈 Rincian Per Bulan")
-    #         # pivot_table = monthly_counts.pivot(index='Bulan', columns='STATUS', values='Jumlah').fillna(0).astype(int)
-    #         # pivot_table['Total'] = pivot_table.sum(axis=1)
-    #         # pivot_table = pivot_table.sort_index(ascending=False)
-    #         # st.dataframe(pivot_table, use_container_width=True)
-            
-    #     else:
-    #         st.error("⚠️ Kolom 'TGL REGISTRASI' tidak ditemukan dalam data")
 
     def render_monitoring(self):
         """Render halaman monitoring"""
@@ -1249,31 +782,6 @@ class PBGMonitoringApp:
                 /div>
                 """, unsafe_allow_html=True)
             
-            # # Download buttons
-            #     col_dl1, col_dl2 = st.columns(2)
-            
-            #     with col_dl1:
-            #         csv = df_filtered.to_csv(index=False).encode("utf-8")
-            #         st.download_button(
-            #             label="📥 Download Laporan (CSV)",
-            #             data=csv,
-            #             file_name=f"Laporan_PBG_{start_date}_to_{end_date}.csv",
-            #             mime="text/csv",
-            #             use_container_width=True
-            #         )
-            
-            #     with col_dl2:
-            #         summary_report = self.buat_laporan_ringkasan(df_filtered)
-            #         st.download_button(
-            #             label="📊 Download Ringkasan (CSV)",
-            #             data=summary_report,
-            #             file_name=f"Ringkasan_PBG_{start_date}_to_{end_date}.csv",
-            #             mime="text/csv",
-            #             use_container_width=True
-            #         )
-            # else:
-            #     st.warning("⚠️ Tidak ada data dalam rentang tanggal yang dipilih")
-
             # ================================
             # ONLY DOWNLOAD LAPORAN
             # ================================
@@ -1288,24 +796,6 @@ class PBGMonitoringApp:
 
         else:
             st.warning("⚠️ Tidak ada data dalam rentang tanggal yang dipilih")
-
-    # def buat_laporan_ringkasan(self, df_filtered: pd.DataFrame) -> bytes:
-    #     """Buat laporan ringkasan dalam format CSV"""
-    #     try:
-    #         # Hitung statistik ringkasan
-    #         summary_data = {
-    #             "Periode": f"{datetime.now().strftime('%d/%m/%Y')}",
-    #             "Total Permohonan": len(df_filtered),
-    #             "Tepat Waktu": len(df_filtered[df_filtered["STATUS"] == "Tepat waktu"]),
-    #             "Sedang Diproses": len(df_filtered[df_filtered["STATUS"] == "Diproses"]),
-    #             "Terlambat": len(df_filtered[df_filtered["STATUS"] == "Terlambat"]),
-    #             "Persentase Tepat Waktu": f"{(len(df_filtered[df_filtered['STATUS'] == 'Tepat waktu']) / len(df_filtered) * 100):.1f}%"
-    #         }
-            
-    #         summary_df = pd.DataFrame([summary_data])
-    #         return summary_df.to_csv(index=False).encode("utf-8")
-    #     except:
-    #         return "Laporan ringkasan tidak dapat dibuat".encode("utf-8")
 
     def run(self):
         """Jalankan aplikasi utama"""
@@ -1647,5 +1137,6 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
