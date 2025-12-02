@@ -352,7 +352,7 @@ class PBGMonitoringApp:
             
             fig.update_layout(
                 showlegend=False,
-                height=390,
+                height=380,
                 margin=dict(t=10, b=10, l=10, r=10),
                 paper_bgcolor='white',
                 plot_bgcolor='white',
@@ -449,8 +449,8 @@ class PBGMonitoringApp:
                     ">
                         <div style="display: flex; align-items: flex-start; gap: 10px;">
                             <div style="
-                                width: 32px;
-                                height: 32px;
+                                width: 30px;
+                                height: 30px;
                                 background: white;
                                 border-radius: 6px;
                                 display: flex;
@@ -467,7 +467,7 @@ class PBGMonitoringApp:
                                     color: #1e293b;
                                     font-size: 11px;
                                     font-weight: 700;
-                                    margin-bottom: 3px;
+                                    margin-bottom: 1px;
                                     white-space: nowrap;
                                     overflow: hidden;
                                     text-overflow: ellipsis;
@@ -477,7 +477,7 @@ class PBGMonitoringApp:
                                 <div style="
                                     color: #64748b;
                                     font-size: 10px;
-                                    margin-bottom: 5px;
+                                    margin-bottom: 3px;
                                     white-space: nowrap;
                                     overflow: hidden;
                                     text-overflow: ellipsis;
@@ -1158,6 +1158,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
