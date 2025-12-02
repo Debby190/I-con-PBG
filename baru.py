@@ -70,7 +70,10 @@ class PBGMonitoringApp:
         ]
 
         creds_info = st.secrets["google_credentials"]
-        creds = Credentials.from_service_account_info(creds_info, scopes=scope)
+        creds = Credentials.from_service_account_info(
+            creds_info, 
+            scopes=scope
+        )
 
         client = gspread.authorize(creds)
         sheet = client.open_by_key("1LEKCe-bbye_mPx9pH-w22LOE95MqFD3ZEp5rLQoqVxg").sheet1
@@ -1644,3 +1647,4 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
