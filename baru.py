@@ -729,11 +729,11 @@ class PBGMonitoringApp:
            )
     
         with col3:
+            st.markdown("<br>", unsafe_allow_html=True)
             tampilkan = st.button("📊 Tampilkan", use_container_width=True)
     
         if tampilkan:
-
-        # 🔥🔥 PERBAIKAN FORMAT TANGGAL YANG BENAR 🔥🔥
+        # Format Tanggal
             self.df["TGL REGISTRASI"] = pd.to_datetime(
                 self.df["TGL REGISTRASI"].astype(str),
                 dayfirst=True,          # <= Fix utama
@@ -1158,6 +1158,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
