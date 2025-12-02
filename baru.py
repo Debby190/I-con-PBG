@@ -320,7 +320,7 @@ class PBGMonitoringApp:
             st.markdown("""
             <div class="chart-card">
                 <h3>📊 Distribusi Status Permohonan</h3>
-                <p>Proporsi berdasarkan status terkini</p>
+                <p>style = "margin-bottom: 0;">Proporsi berdasarkan status terkini</p>
             </div>
             """, unsafe_allow_html=True)
             
@@ -1159,6 +1159,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
