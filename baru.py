@@ -251,7 +251,7 @@ class PBGMonitoringApp:
             return {}
             
         total_permohonan = len(self.df)
-        permohonan_selesai = len(self.df[self.df["STATUS"] == 'Tepat waktu'])
+        permohonan_selesai = len(self.df[self.df["STATUS"] == "Tepat waktu"])
         permohonan_diproses = len(self.df[self.df["STATUS"] == "Diproses"])
         permohonan_terlambat = len(self.df[self.df["STATUS"] == "Terlambat"])
         
@@ -1647,4 +1647,5 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
