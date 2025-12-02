@@ -395,9 +395,9 @@ class PBGMonitoringApp:
                 st.markdown("""
                 <div class="empty-activity">
                     <div style="text-align: center; padding: 2rem 1rem; color: #94a3b8;">
-                        <div style="font-size: 48px; margin-bottom: 12px;">✨</div>
-                        <div style="font-size: 13px; font-weight: 600; color: #64748b;">Tidak ada permohonan yang memerlukan perhatian</div>
-                        <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Semua permohonan telah selesai tepat waktu</div>
+                        <div style="font-size: 40px; margin-bottom: 12px;">✨</div>
+                        <div style="font-size: 12px; font-weight: 600; color: #64748b;">Tidak ada permohonan yang memerlukan perhatian</div>
+                        <div style="font-size: 10px; color: #94a3b8; margin-top: 4px;">Semua permohonan telah selesai tepat waktu</div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -1139,6 +1139,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
