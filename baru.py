@@ -314,73 +314,112 @@ class PBGMonitoringApp:
                 # ==========================
         # CARD 5: TOTAL RETRIBUSI + PILIH TAHUN
         # ==========================
+        # col5 = st.columns(5)[4]
+
+        # with col5:
+        #     # --- Cari kolom retribusi yang benar ---
+        #     kolom_retribusi = None
+        #     for k in ["RETRIBUSI", "NILAI RETRIBUSI", "TOTAL RETRIBUSI"]:
+        #         if k in self.df.columns:
+        #             kolom_retribusi = k
+        #             break
+
+        #     if kolom_retribusi is None:
+        #         st.error("Kolom retribusi tidak ditemukan.")
+        #         kolom_retribusi = None
+
+        #     # --- Normalisasi tanggal registrasi ---
+        #     if "TGL REGISTRASI" in self.df.columns:
+        #         df_temp = self.df.copy()
+        #         df_temp["TGL_REG"] = pd.to_datetime(df_temp["TGL REGISTRASI"], errors="coerce", dayfirst=True)
+        #         df_temp = df_temp[df_temp["TGL_REG"].notna()]
+        #     else:
+        #         df_temp = self.df.copy()
+        #         df_temp["TGL_REG"] = None
+
+        #     # --- Ambil daftar tahun unik ---
+        #     if df_temp["TGL_REG"].notna().any():
+        #         tahun_list = sorted(df_temp["TGL_REG"].dt.year.dropna().unique())
+        #     else:
+        #         tahun_list = []
+
+        #     tahun_list = ["Semua Tahun"] + tahun_list
+
+        #     # --- Dropdown pilih tahun ---
+        #     tahun_pilihan = st.selectbox("Tahun", tahun_list, key="tahun_retribusi")
+
+        #     # --- Filter berdasarkan tahun ---
+        #     if tahun_pilihan == "Semua Tahun":
+        #         df_filtered = df_temp.copy()
+        #     else:
+        #         df_filtered = df_temp[df_temp["TGL_REG"].dt.year == tahun_pilihan]
+
+        #     # --- Bersihkan angka retribusi ---
+        #     def to_int(x):
+        #         try:
+        #             x = str(x).replace(".", "").replace(",", "").strip()
+        #             return int(float(x))
+        #         except:
+        #             return 0
+
+        #     if kolom_retribusi:
+        #         df_filtered["RET_INT"] = df_filtered[kolom_retribusi].apply(to_int)
+        #         total_retribusi = df_filtered["RET_INT"].sum()
+        #     else:
+        #         total_retribusi = 0
+
+        #     # --- Format rupiah ---
+        #     total_rp = f"Rp {total_retribusi:,.0f}".replace(",", ".")
+
+        #     # --- Tampilkan metric card ---
+        #     st.markdown(f"""
+        #     <div class="metric-card" style="border-left-color: #6366f1;">
+        #         <div class="metric-icon">🪙</div>
+        #         <div class="metric-value" style="color: #6366f1; font-size:22px;">
+        #             {total_rp}
+        #         </div>
+        #         <div class="metric-label">Total Retribusi ({tahun_pilihan})</div>
+        #     </div>
+        #     """, unsafe_allow_html=True)
         col5 = st.columns(5)[4]
 
         with col5:
-            # --- Cari kolom retribusi yang benar ---
-            kolom_retribusi = None
-            for k in ["RETRIBUSI", "NILAI RETRIBUSI", "TOTAL RETRIBUSI"]:
-                if k in self.df.columns:
-                    kolom_retribusi = k
-                    break
 
-            if kolom_retribusi is None:
-                st.error("Kolom retribusi tidak ditemukan.")
-                kolom_retribusi = None
+            st.markdown('<div class="retribusi-wrapper">', unsafe_allow_html=True)
 
-            # --- Normalisasi tanggal registrasi ---
-            if "TGL REGISTRASI" in self.df.columns:
-                df_temp = self.df.copy()
-                df_temp["TGL_REG"] = pd.to_datetime(df_temp["TGL REGISTRASI"], errors="coerce", dayfirst=True)
-                df_temp = df_temp[df_temp["TGL_REG"].notna()]
-            else:
-                df_temp = self.df.copy()
-                df_temp["TGL_REG"] = None
+            # === Dropdown ===
+            dropdown_container = st.container()
+            with dropdown_container:
+                tahun_pilihan = st.selectbox(
+                    "",
+                    tahun_list,
+                    key="tahun_retribusi",
+                    label_visibility="collapsed"
+                )
 
-            # --- Ambil daftar tahun unik ---
-            if df_temp["TGL_REG"].notna().any():
-                tahun_list = sorted(df_temp["TGL_REG"].dt.year.dropna().unique())
-            else:
-                tahun_list = []
+            # Tempatkan dropdown
+            st.markdown('<div class="retribusi-dropdown-container"></div>', unsafe_allow_html=True)
 
-            tahun_list = ["Semua Tahun"] + tahun_list
-
-            # --- Dropdown pilih tahun ---
-            tahun_pilihan = st.selectbox("Tahun", tahun_list, key="tahun_retribusi")
-
-            # --- Filter berdasarkan tahun ---
+            # === Hitung total retribusi ===
             if tahun_pilihan == "Semua Tahun":
                 df_filtered = df_temp.copy()
             else:
                 df_filtered = df_temp[df_temp["TGL_REG"].dt.year == tahun_pilihan]
 
-            # --- Bersihkan angka retribusi ---
-            def to_int(x):
-                try:
-                    x = str(x).replace(".", "").replace(",", "").strip()
-                    return int(float(x))
-                except:
-                    return 0
-
-            if kolom_retribusi:
-                df_filtered["RET_INT"] = df_filtered[kolom_retribusi].apply(to_int)
-                total_retribusi = df_filtered["RET_INT"].sum()
-            else:
-                total_retribusi = 0
-
-            # --- Format rupiah ---
+            df_filtered["RET_INT"] = df_filtered[kolom_retribusi].apply(to_int)
+            total_retribusi = df_filtered["RET_INT"].sum()
             total_rp = f"Rp {total_retribusi:,.0f}".replace(",", ".")
 
-            # --- Tampilkan metric card ---
+    # === Card Retribusi ===
             st.markdown(f"""
-            <div class="metric-card" style="border-left-color: #6366f1;">
+            <div class="metric-card retribusi-card" style="border-left-color:#6366f1">
                 <div class="metric-icon">🪙</div>
-                <div class="metric-value" style="color: #6366f1; font-size:22px;">
-                    {total_rp}
-                </div>
+                <div class="metric-value" style="color:#6366f1; font-size:22px;">{total_rp}</div>
                 <div class="metric-label">Total Retribusi ({tahun_pilihan})</div>
             </div>
             """, unsafe_allow_html=True)
+
+            st.markdown("</div>", unsafe_allow_html=True)
 
         
         st.markdown("<br>", unsafe_allow_html=True)
@@ -1248,6 +1287,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
