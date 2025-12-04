@@ -310,12 +310,14 @@ class PBGMonitoringApp:
             </div>
             """, unsafe_allow_html=True)
                 # ==========================
-        # CARD 5: TOTAL RETRIBUSI  
+
+                # ==========================
+        # CARD 5: TOTAL RETRIBUSI + PILIH TAHUN
         # ==========================
-        col5 = st.columns(5)[4]  # Membuat kolom ke-5 di barisan metric
+        col5 = st.columns(5)[4]
 
         with col5:
-            # Cek apakah kolom retribusi ada
+            # --- Cari kolom retribusi yang benar ---
             kolom_retribusi = None
             for k in ["RETRIBUSI", "NILAI RETRIBUSI", "TOTAL RETRIBUSI"]:
                 if k in self.df.columns:
@@ -323,31 +325,63 @@ class PBGMonitoringApp:
                     break
 
             if kolom_retribusi is None:
-                total_retribusi = 0
+                st.error("Kolom retribusi tidak ditemukan.")
+                kolom_retribusi = None
+
+            # --- Normalisasi tanggal registrasi ---
+            if "TGL REGISTRASI" in self.df.columns:
+                df_temp = self.df.copy()
+                df_temp["TGL_REG"] = pd.to_datetime(df_temp["TGL REGISTRASI"], errors="coerce", dayfirst=True)
+                df_temp = df_temp[df_temp["TGL_REG"].notna()]
             else:
-                # Bersihkan nilai retribusi menjadi integer
-                def to_int(x):
-                    try:
-                        x = str(x).replace(".", "").replace(",", "").strip()
-                        return int(x)
-                    except:
-                        return 0
+                df_temp = self.df.copy()
+                df_temp["TGL_REG"] = None
 
-                nilai_bersih = self.df[kolom_retribusi].apply(to_int)
-                total_retribusi = nilai_bersih.sum()
+            # --- Ambil daftar tahun unik ---
+            if df_temp["TGL_REG"].notna().any():
+                tahun_list = sorted(df_temp["TGL_REG"].dt.year.dropna().unique())
+            else:
+                tahun_list = []
 
-            # Format uang
+            tahun_list = ["Semua Tahun"] + tahun_list
+
+            # --- Dropdown pilih tahun ---
+            tahun_pilihan = st.selectbox("Tahun", tahun_list, key="tahun_retribusi")
+
+            # --- Filter berdasarkan tahun ---
+            if tahun_pilihan == "Semua Tahun":
+                df_filtered = df_temp.copy()
+            else:
+                df_filtered = df_temp[df_temp["TGL_REG"].dt.year == tahun_pilihan]
+
+            # --- Bersihkan angka retribusi ---
+            def to_int(x):
+                try:
+                    x = str(x).replace(".", "").replace(",", "").strip()
+                    return int(float(x))
+                except:
+                    return 0
+
+            if kolom_retribusi:
+                df_filtered["RET_INT"] = df_filtered[kolom_retribusi].apply(to_int)
+                total_retribusi = df_filtered["RET_INT"].sum()
+            else:
+                total_retribusi = 0
+
+            # --- Format rupiah ---
             total_rp = f"Rp {total_retribusi:,.0f}".replace(",", ".")
 
+            # --- Tampilkan metric card ---
             st.markdown(f"""
             <div class="metric-card" style="border-left-color: #6366f1;">
                 <div class="metric-icon">🪙</div>
                 <div class="metric-value" style="color: #6366f1; font-size:22px;">
                     {total_rp}
                 </div>
-                <div class="metric-label">Total Retribusi</div>
+                <div class="metric-label">Total Retribusi ({tahun_pilihan})</div>
             </div>
             """, unsafe_allow_html=True)
+
         
         st.markdown("<br>", unsafe_allow_html=True)
         
@@ -1197,6 +1231,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
