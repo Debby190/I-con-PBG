@@ -1216,6 +1216,23 @@ st.markdown("""
     margin: 1.5rem 0;
     border: none;
 }
+/* === Dropdown di dalam card Retribusi === */
+.retribusi-wrapper {
+    position: relative;
+}
+
+.retribusi-dropdown {
+    position: absolute;
+    top: 12px;           /* posisi vertikal dropdown */
+    right: 12px;         /* posisi horizontal dropdown */
+    width: 120px;        /* sesuaikan ukuran */
+    z-index: 10;
+}
+
+.retribusi-card {
+    padding-top: 55px !important;  /* memberi ruang untuk dropdown */
+}
+
 </style>
 <script>
 document.body.style.zoom = "0.75"; 
@@ -1231,6 +1248,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
