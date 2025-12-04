@@ -309,6 +309,45 @@ class PBGMonitoringApp:
                 <div class="metric-label">Terlambat</div>
             </div>
             """, unsafe_allow_html=True)
+                # ==========================
+        # CARD 5: TOTAL RETRIBUSI  
+        # ==========================
+        col5 = st.columns(5)[4]  # Membuat kolom ke-5 di barisan metric
+
+        with col5:
+            # Cek apakah kolom retribusi ada
+            kolom_retribusi = None
+            for k in ["RETRIBUSI", "NILAI RETRIBUSI", "TOTAL RETRIBUSI"]:
+                if k in self.df.columns:
+                    kolom_retribusi = k
+                    break
+
+            if kolom_retribusi is None:
+                total_retribusi = 0
+            else:
+                # Bersihkan nilai retribusi menjadi integer
+                def to_int(x):
+                    try:
+                        x = str(x).replace(".", "").replace(",", "").strip()
+                        return int(x)
+                    except:
+                        return 0
+
+                nilai_bersih = self.df[kolom_retribusi].apply(to_int)
+                total_retribusi = nilai_bersih.sum()
+
+            # Format uang
+            total_rp = f"Rp {total_retribusi:,.0f}".replace(",", ".")
+
+            st.markdown(f"""
+            <div class="metric-card" style="border-left-color: #6366f1;">
+                <div class="metric-icon">🪙</div>
+                <div class="metric-value" style="color: #6366f1; font-size:22px;">
+                    {total_rp}
+                </div>
+                <div class="metric-label">Total Retribusi</div>
+            </div>
+            """, unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
         
@@ -1158,6 +1197,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
