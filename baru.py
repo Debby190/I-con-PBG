@@ -739,8 +739,8 @@ class PBGMonitoringApp:
                 margin=dict(t=60, b=60, l=60, r=40),
                 hovermode="x unified",
                 yaxis_title="Jumlah Permohonan",
-                xaxis_title="(Bulan-Tahun)",
-                legend_title="Status",
+                xaxis_title="Status (Bulan-Tahun)",
+                legend_title="",
                 plot_bgcolor="white",
                 paper_bgcolor="white",
                 showlegend=True,
@@ -1233,6 +1233,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
