@@ -619,7 +619,10 @@ class PBGMonitoringApp:
                 result = result[result["STATUS"].str.contains(search_input, case=False, na=False)]
             else:
                 result = result[result[search_option].astype(str).str.contains(search_input, case=False, na=False)]
-        
+
+        if status_filter:
+            result = result[result["STATUS"].isin(status_filter)]
+
         if result.empty:
             st.warning("⚠️ Tidak ada data yang cocok dengan kriteria pencarian.")
             return
@@ -1230,6 +1233,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
