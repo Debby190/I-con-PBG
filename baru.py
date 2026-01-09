@@ -318,7 +318,7 @@ class PBGMonitoringApp:
         with col5:
             # --- Cari kolom retribusi yang benar ---
             kolom_retribusi = None
-            for k in ["RETRIBUSI", "NILAI RETRIBUSI", "TOTAL RETRIBUSI"]:
+            for k in ["BESARAN RETRIBUSI (Rp)", "NILAI RETRIBUSI", "TOTAL RETRIBUSI"]:
                 if k in self.df.columns:
                     kolom_retribusi = k
                     break
@@ -1232,6 +1232,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
