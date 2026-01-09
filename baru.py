@@ -312,9 +312,8 @@ class PBGMonitoringApp:
                 # ==========================
 
                 # ==========================
-        CARD 5: TOTAL RETRIBUSI + PILIH TAHUN
-        ==========================
-        col5 = st.columns(5)[4]
+      
+        # col5 = st.columns(5)[4]
 
         with col5:
             # --- Cari kolom retribusi yang benar ---
@@ -1233,6 +1232,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
