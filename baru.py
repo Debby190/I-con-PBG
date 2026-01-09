@@ -272,7 +272,7 @@ class PBGMonitoringApp:
         stats = self.get_statistics()
         
         # Metric Cards - 4 kolom
-        col1, col2, col3, col4, col 5 = st.columns(5)
+        col1, col2, col3, col4, col5 = st.columns(5)
         
         with col1:
             st.markdown(f"""
@@ -1233,6 +1233,7 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
 
 
