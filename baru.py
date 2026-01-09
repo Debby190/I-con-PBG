@@ -28,11 +28,16 @@ class PBGMonitoringApp:
         self.SOP_TAHAPAN = {
             "VERIFIKASI BERKAS": 1,
             "SURVEY LOKASI": 2,
-            "VERIFIKASI SUBKO": 3,
-            "PENILAIAN TEKNIS TPT/TPA": 5,
+            "PERBAIKAN BERKAS I": 1,
+            "MELENGKAPI PERBAIKAN BERKAS I": 1, 
+            "VERIFIKASI SUBKO": 1,
+            "PERBAIKAN BERKAS II": 1,
+            "MELENGKAPI PERBAIKAN BERKAS II": 1,
+            "PENILAIAN TEKNIS TPT/TPA": 3,
             "MELENGKAPI PERBAIKAN BERKAS": 3,
             "PERHITUNGAN VOLUME": 1,
-            "TTD GAMBAR KABID + KADIS": 2,
+            "TTD GAMBAR KABID": 1,
+            "TTD GAMBAR KADIS": 1,
             "SCAN GAMBAR + BA TPT/TPA": 1,
             "PELAKSANAAN KONSULTASI + INPUT RETRIBUSI": 4,
             "SPPST KADIS": 1
@@ -81,12 +86,17 @@ class PBGMonitoringApp:
         if str(sppst_val).strip() == "-":
             tahapan_list = [
                 "VERIFIKASI BERKAS",
-                "SURVEY LOKASI", 
+                "SURVEY LOKASI",
+                "PERBAIKAN BERKAS I",
+                "MELENGKAPI PERBAIKAN BERKAS I", 
                 "VERIFIKASI SUBKO",
+                "PERBAIKAN BERKAS II",
+                "MELENGKAPI PERBAIKAN BERKAS II",
                 "PENILAIAN TEKNIS TPT/TPA",
                 "MELENGKAPI PERBAIKAN BERKAS",
                 "PERHITUNGAN VOLUME",
-                "TTD GAMBAR KABID + KADIS",
+                "TTD GAMBAR KABID",
+                "TTD GAMBAR KADIS",
                 "SCAN GAMBAR + BA TPT/TPA",
                 "PELAKSANAAN KONSULTASI + INPUT RETRIBUSI",
                 "SPPST KADIS"
@@ -312,8 +322,6 @@ class PBGMonitoringApp:
                 # ==========================
 
                 # ==========================
-      
-        # col5 = st.columns(5)[4]
 
         with col5:
             # --- Cari kolom retribusi yang benar ---
@@ -1232,32 +1240,3 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
