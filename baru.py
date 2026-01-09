@@ -116,7 +116,7 @@ class PBGMonitoringApp:
             
             if tgl_terakhir and tgl_registrasi:
                 total_hari = (tgl_terakhir - tgl_registrasi).days
-                return "Tepat waktu" if total_hari <= 23 else "Terlambat"
+                return "Tepat waktu" if total_hari 0 and <= 23 else "Terlambat"
             else:
                 return "Diproses"
         
@@ -1240,3 +1240,4 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
