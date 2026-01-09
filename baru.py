@@ -102,34 +102,45 @@ class PBGMonitoringApp:
                 "SPPST KADIS"
             ]
             
-            # Cari tahapan terakhir yang ada datanya (bukan kosong dan bukan "-")
-            tgl_terakhir = None
-            
-            for tahap in reversed(tahapan_list):
-                val = row.get(tahap)
-                if pd.notna(val) and str(val).strip() != "" and str(val).strip() != "-":
-                    try:
-                        tgl_terakhir = pd.to_datetime(val, dayfirst=True)
-                        break
-                    except:
-                        pass
-            
-            if tgl_terakhir and tgl_registrasi:
-                total_hari = (tgl_terakhir - tgl_registrasi).days
-                return "Tepat waktu" if total_hari 0 and <= 23 else "Terlambat"
-            else:
+        # Cari tahapan terakhir yang ada datanya (bukan kosong dan bukan "-")
+        tgl_terakhir = None
+
+        for tahap in reversed(tahapan_list):
+            val = row.get(tahap)
+            if pd.notna(val) and str(val).strip() != "" and str(val).strip() != "-":
+                try:
+                    tgl_terakhir = pd.to_datetime(val, dayfirst=True)
+                    break
+                except:
+                    pass
+
+        if tgl_terakhir is not None and tgl_registrasi is not None:
+            total_hari = (tgl_terakhir - tgl_registrasi).days
+
+            # pengamanan jika data tidak wajar
+            if total_hari < 0:
                 return "Diproses"
+
+            return "Tepat waktu" if 0 <= total_hari <= 23 else "Terlambat"
         
-        # Jika SPPST KADIS ada tanggalnya, hitung dari TGL REGISTRASI
+
         try:
             tgl_sppst = pd.to_datetime(sppst_val, dayfirst=True)
-            if tgl_registrasi:
+
+            if tgl_registrasi is not None:
                 total_hari = (tgl_sppst - tgl_registrasi).days
-                return "Tepat waktu" if total_hari <= 23 else "Terlambat"
-            else:
-                return "Diproses"
+
+                # pengamanan jika data tidak wajar
+                if total_hari < 0:
+                    return "Diproses"
+
+                return "Tepat waktu" if 0 <= total_hari <= 23 else "Terlambat"
         except:
-            return "Diproses"
+            pass
+
+        return 'Diproses'
+
+
 
     def highlight_terlambat(self, row):
         """Highlight berdasarkan SOP:
@@ -1240,4 +1251,5 @@ if __name__ == "__main__":
     app = PBGMonitoringApp()
 
     app.run()
+
 
