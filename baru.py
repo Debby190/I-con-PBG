@@ -29,19 +29,14 @@ class PBGMonitoringApp:
         self.SOP_TAHAPAN = {
             "VERIFIKASI BERKAS": 1,
             "SURVEY LOKASI": 2,
-            "PERBAIKAN BERKAS I": 1,
-            "MELENGKAPI PERBAIKAN BERKAS I": 1, 
-            "VERIFIKASI SUBKO": 1,
-            "PERBAIKAN BERKAS II": 1,
-            "MELENGKAPI PERBAIKAN BERKAS II": 1,
-            "PENILAIAN TEKNIS TPT/TPA": 3,
+            "VERIFIKASI SUBKO": 3,
+            "PENILAIAN TEKNIS TPT/TPA": 5,
             "MELENGKAPI PERBAIKAN BERKAS": 3,
             "PERHITUNGAN VOLUME": 1,
-            "TTD GAMBAR KABID": 1,
-            "TTD GAMBAR KADIS": 1,
+            "TTD GAMBAR KABID + KADIS": 2,
             "SCAN GAMBAR + BA TPT/TPA": 1,
             "PELAKSANAAN KONSULTASI + INPUT RETRIBUSI": 4,
-            "SPPST KADIS": 1
+            "SPPST KADIS": 11
         }
         self.df = None
         self.load_data()
@@ -87,20 +82,16 @@ class PBGMonitoringApp:
         if str(sppst_val).strip() == "-":
             tahapan_list = [
                 "VERIFIKASI BERKAS",
-                "SURVEY LOKASI",
-                "PERBAIKAN BERKAS I",
-                "MELENGKAPI PERBAIKAN BERKAS I", 
+                "SURVEY LOKASI", 
                 "VERIFIKASI SUBKO",
-                "PERBAIKAN BERKAS II",
-                "MELENGKAPI PERBAIKAN BERKAS II",
                 "PENILAIAN TEKNIS TPT/TPA",
                 "MELENGKAPI PERBAIKAN BERKAS",
                 "PERHITUNGAN VOLUME",
-                "TTD GAMBAR KABID",
-                "TTD GAMBAR KADIS",
+                "TTD GAMBAR KABID + KADIS",
                 "SCAN GAMBAR + BA TPT/TPA",
                 "PELAKSANAAN KONSULTASI + INPUT RETRIBUSI",
                 "SPPST KADIS"
+            ]
             ]
             
             # Cari tahapan terakhir yang ada datanya (bukan kosong dan bukan "-")
@@ -1249,6 +1240,7 @@ document.body.style.transformOrigin = "0 0";
 if __name__ == "__main__":
     app = PBGMonitoringApp()
     app.run()
+
 
 
 
