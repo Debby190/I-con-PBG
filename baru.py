@@ -9,6 +9,7 @@ import numpy as np
 from typing import Dict, List, Optional, Tuple
 import io
 import json
+import re
 
 # ================================
 # KONFIGURASI HALAMAN
@@ -361,11 +362,20 @@ class PBGMonitoringApp:
             else:
                 df_filtered = df_temp[df_temp["TGL_REG"].dt.year == tahun_pilihan]
 
-            # --- Bersihkan angka retribusi ---
             def to_int(x):
+                if pd.isna(x):
+                    return 0
+
+                s = str(x).strip()
+                s = re.sub(r"[^0-9.,]", "", s)
+
+                if "," in s:
+                    s = s.split(",")[0]
+
+                s = s.replace(".", "")
+
                 try:
-                    x = str(x).replace(".", "").replace(",", "").strip()
-                    return int(float(x))
+                    return int(s)
                 except:
                     return 0
 
@@ -1239,6 +1249,7 @@ document.body.style.transformOrigin = "0 0";
 if __name__ == "__main__":
     app = PBGMonitoringApp()
     app.run()
+
 
 
 
