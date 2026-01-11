@@ -92,7 +92,6 @@ class PBGMonitoringApp:
                 "PELAKSANAAN KONSULTASI + INPUT RETRIBUSI",
                 "SPPST KADIS"
             ]
-            ]
             
             # Cari tahapan terakhir yang ada datanya (bukan kosong dan bukan "-")
             tgl_terakhir = None
@@ -1240,6 +1239,7 @@ document.body.style.transformOrigin = "0 0";
 if __name__ == "__main__":
     app = PBGMonitoringApp()
     app.run()
+
 
 
 
