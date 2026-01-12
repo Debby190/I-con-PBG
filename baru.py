@@ -60,27 +60,59 @@ class PBGMonitoringApp:
         df = pd.DataFrame(sheet.get_all_records())
         return df
 
+    def normalize_workday(self, dt):
+        """
+        Geser tanggal yang jatuh di Sabtu/Minggu ke Senin terdekat.
+        """
+        if dt is None or pd.isna(dt):
+            return None
+
+        if dt.weekday() == 5:      # Sabtu
+            return dt + pd.Timedelta(days=2)
+        elif dt.weekday() == 6:    # Minggu
+            return dt + pd.Timedelta(days=1)
+        return dt
+
+
     def hitung_status(self, row):
-        """Hitung status permohonan berdasarkan tahapan"""
         tgl_registrasi = None
-        
-        # Ambil tanggal registrasi
-        if pd.notna(row.get("TGL REGISTRASI")):
-            try:
-                tgl_registrasi = pd.to_datetime(row.get("TGL REGISTRASI"), dayfirst=True)
-            except:
-                pass
-        
-        # Cek SPPST KADIS
-        sppst_val = row.get("SPPST KADIS")
-        
-        # Jika SPPST KADIS kosong atau tidak ada, masih diproses
-        if pd.isna(sppst_val) or str(sppst_val).strip() == "":
+
+    # Ambil tanggal registrasi
+        try:
+            # tgl_registrasi = pd.to_datetime(row.get("TGL REGISTRASI"), dayfirst=True)
+            tgl_registrasi = self.normalize_workday(
+    pd.to_datetime(row.get("TGL REGISTRASI"), dayfirst=True, errors="coerce")
+)
+       
+        except:
             return "Diproses"
-        
-        # Jika SPPST KADIS isi "-", abaikan dan cek tahapan terakhir yang ada
-        if str(sppst_val).strip() == "-":
-            tahapan_list = [
+
+        sppst_val = row.get("SPPST KADIS")
+
+    # ===============================
+    # PRIORITAS 1: SPPST ADA TANGGAL
+    # ===============================
+        if pd.notna(sppst_val) and str(sppst_val).strip() not in ["", "-"]:
+            try:
+                # tgl_sppst = pd.to_datetime(sppst_val, dayfirst=True)
+                tgl_sppst = self.normalize_workday(
+                    pd.to_datetime(sppst_val, dayfirst=True, errors="coerce")
+                    )
+
+                total_hari = (tgl_sppst - tgl_registrasi).days
+
+                if total_hari < 0:
+                    return "Diproses"
+
+                return "Tepat waktu" if total_hari <= 23 else "Terlambat"
+            except:
+                pass  # lanjut ke tahapan
+
+
+    # ===============================
+    # PRIORITAS 2: CEK TAHAPAN TERAKHIR
+    # ===============================
+        tahapan_list = [
                 "VERIFIKASI BERKAS",
                 "SURVEY LOKASI", 
                 "VERIFIKASI SUBKO",
@@ -91,36 +123,47 @@ class PBGMonitoringApp:
                 "SCAN GAMBAR + BA TPT/TPA",
                 "PELAKSANAAN KONSULTASI + INPUT RETRIBUSI",
                 "SPPST KADIS"
-            ]
-            
-            # Cari tahapan terakhir yang ada datanya (bukan kosong dan bukan "-")
-            tgl_terakhir = None
-            
-            for tahap in reversed(tahapan_list):
-                val = row.get(tahap)
-                if pd.notna(val) and str(val).strip() != "" and str(val).strip() != "-":
-                    try:
-                        tgl_terakhir = pd.to_datetime(val, dayfirst=True)
-                        break
-                    except:
-                        pass
-            
-            if tgl_terakhir and tgl_registrasi:
-                total_hari = (tgl_terakhir - tgl_registrasi).days
-                return "Tepat waktu" if total_hari <= 23 else "Terlambat"
-            else:
+        ]
+
+        tgl_terakhir = None
+
+        for tahap in reversed(tahapan_list):
+            val = row.get(tahap)
+            if pd.notna(val) and str(val).strip() not in ["", "-"]:
+                try:
+                    # tgl_terakhir = pd.to_datetime(val, dayfirst=True)
+                    tgl_terakhir = self.normalize_workday(
+                        pd.to_datetime(val, dayfirst=True, errors="coerce")
+                    )
+
+                    break
+                except:
+                    pass
+
+        if tgl_terakhir is not None:
+            total_hari = (tgl_terakhir - tgl_registrasi).days
+
+            if total_hari < 0:
                 return "Diproses"
-        
-        # Jika SPPST KADIS ada tanggalnya, hitung dari TGL REGISTRASI
-        try:
-            tgl_sppst = pd.to_datetime(sppst_val, dayfirst=True)
-            if tgl_registrasi:
-                total_hari = (tgl_sppst - tgl_registrasi).days
-                return "Tepat waktu" if total_hari <= 23 else "Terlambat"
-            else:
-                return "Diproses"
-        except:
-            return "Diproses"
+
+            return "Tepat waktu" if total_hari <= 23 else "Terlambat"
+
+    # ===============================
+    # DEFAULT
+    # ===============================
+        return "Diproses"
+
+    def hitung_hari_kerja(self, start_date, end_date):
+        """ Hitung jumlah hari kerja (Senin–Jumat)"""
+        if pd.isna(start_date) or pd.isna(end_date):
+            return 0
+
+        start = np.datetime64(start_date.date())
+        end = np.datetime64(end_date.date()) + np.timedelta64(1, 'D')
+
+        return np.busday_count(start, end)
+
+
 
     def highlight_terlambat(self, row):
         """Highlight berdasarkan SOP:
@@ -135,7 +178,11 @@ class PBGMonitoringApp:
 
     # Ambil tanggal registrasi sebagai tahap awal
         try:
-            prev_date = pd.to_datetime(row["TGL REGISTRASI"], dayfirst=True)
+            prev_date = self.normalize_workday(
+                pd.to_datetime(row["TGL REGISTRASI"], dayfirst=True, errors="coerce")
+            )
+
+            # prev_date = pd.to_datetime(row["TGL REGISTRASI"], dayfirst=True)
         except:
             return styles
 
@@ -153,17 +200,25 @@ class PBGMonitoringApp:
 
             # Jika tanggal ADA → hitung selisih
             try:
-                curr_date = pd.to_datetime(nilai, dayfirst=True)
+                # curr_date = pd.to_datetime(nilai, dayfirst=True)
+                curr_date = self.normalize_workday(
+                    pd.to_datetime(nilai, dayfirst=True, errors="coerce")
+                    )
             except:
                 # Jika format salah dianggap tidak valid
                 sop_acc += sop_hari
                 continue
 
             # Hitung selisih hari dari prev_date
-            selisih = (curr_date - prev_date).days
+            # selisih = (curr_date - prev_date).days
 
-            # Jika selisih > total SOP yang ditentukan dari beberapa tahap sebelumnya
-            if selisih > sop_acc + sop_hari:
+            
+            selisih = self.hitung_hari_kerja(prev_date, curr_date)
+
+            # if selisih > sop_acc + sop_hari:
+            # Hanya evaluasi jika tahap ini memang DIKERJAKAN
+            if nilai not in ["", "-"] and selisih > sop_acc + sop_hari:
+
                 styles[col_idx] = 'background-color: #fee2e2; color: #dc2626; font-weight: bold'
 
             # Setelah tahap selesai → reset akumulasi SOP
@@ -351,6 +406,14 @@ class PBGMonitoringApp:
                 df_filtered = df_temp.copy()
             else:
                 df_filtered = df_temp[df_temp["TGL_REG"].dt.year == tahun_pilihan]
+
+            # --- Bersihkan angka retribusi ---
+            # def to_int(x):
+            #     try:
+            #         x = str(x).replace(".", "").replace(",", "").strip()
+            #         return int(float(x))
+            #     except:
+            #         return 0
 
             def to_int(x):
                 if pd.isna(x):
@@ -639,15 +702,16 @@ class PBGMonitoringApp:
             try:
                 tgl_reg = pd.to_datetime(row["TGL REGISTRASI"], dayfirst=True)
                 tgl_sppst = pd.to_datetime(row["SPPST KADIS"], dayfirst=True)
-                return (tgl_sppst - tgl_reg).days
+                return self.hitung_hari_kerja(tgl_reg, tgl_sppst)
+
             except:
                 return None
 
         result["TOTAL HARI"] = result.apply(hitung_total_hari, axis=1).astype('Int64')
 
-        # ===============================
-        # RESET INDEX AGAR MULAI DARI 1
-        # ===============================
+    # ===============================
+    # RESET INDEX AGAR MULAI DARI 1
+    # ===============================
         result = result.reset_index(drop=True)
         result.index = result.index + 1
 
@@ -659,7 +723,7 @@ class PBGMonitoringApp:
             use_container_width=True,
             height=400
         )
-
+    
         st.markdown("""
         <div class="legend-box">
             <span class="legend-item">Merah</span>
@@ -1245,10 +1309,4 @@ document.body.style.transformOrigin = "0 0";
 if __name__ == "__main__":
     app = PBGMonitoringApp()
     app.run()
-
-
-
-
-
-
 
