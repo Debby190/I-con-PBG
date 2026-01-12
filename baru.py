@@ -121,13 +121,14 @@ class PBGMonitoringApp:
                         tgl_terakhir = self.normalize_workday(
                             pd.to_datetime(val, dayfirst=True, errors="coerce")
                             )
-
                         break
+
                     except:
                         pass
             
             if tgl_terakhir and tgl_registrasi:
-                total_hari = (tgl_terakhir - tgl_registrasi).days
+                # total_hari = (tgl_terakhir - tgl_registrasi).days
+                total_hari = self.hitung_hari_kerja(tgl_registrasi, tgl_sppst)
                 return "Tepat waktu" if total_hari <= 23 else "Terlambat"
             else:
                 return "Diproses"
@@ -140,7 +141,8 @@ class PBGMonitoringApp:
                 )
 
             if tgl_registrasi:
-                total_hari = (tgl_sppst - tgl_registrasi).days
+                # total_hari = (tgl_sppst - tgl_registrasi).days
+                total_hari = self.hitung_hari_kerja(tgl_registrasi, tgl_sppst)
                 return "Tepat waktu" if total_hari <= 23 else "Terlambat"
             else:
                 return "Diproses"
@@ -218,6 +220,9 @@ class PBGMonitoringApp:
             # Setelah tahap selesai → reset akumulasi SOP
             sop_acc = 0
             prev_date = curr_date  # update ke tanggal tahap valid terbaru
+            if curr_date is None or prev_date is None:
+                sop_acc += sop_hari
+                continue
 
         return styles
 
