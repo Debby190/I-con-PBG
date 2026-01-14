@@ -155,7 +155,7 @@ class PBGMonitoringApp:
             return 0
 
         start = np.datetime64(start_date.date())
-        end = np.datetime64(end_date.date()) + np.timedelta64(1, 'D')
+        end = np.datetime64(end_date.date()) 
 
         return np.busday_count(start, end)    
 
@@ -1347,6 +1347,7 @@ document.body.style.transformOrigin = "0 0";
 if __name__ == "__main__":
     app = PBGMonitoringApp()
     app.run()
+
 
 
 
