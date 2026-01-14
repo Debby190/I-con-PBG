@@ -159,119 +159,72 @@ class PBGMonitoringApp:
 
         return np.busday_count(start, end)    
 
-    # def highlight_terlambat(self, row):
-    #     """Highlight berdasarkan SOP:
-    #         - Setiap tahap dihitung dari tanggal tahap sebelumnya.
-    #         - Tahap '-' tetap menambah akumulasi SOP.
-    #         - Tahap dengan tanggal dibandingkan total SOP sejak tahap valid sebelumnya.
-    #     """
-    #     if row.get("STATUS") == "Diproses":
-    #         return [''] * len(row)
-
-    #     styles = [''] * len(row)
-
-    #     tahapan = list(self.SOP_TAHAPAN.keys())
-
-    # # Ambil tanggal registrasi sebagai tahap awal
-    #     try:
-    #         # prev_date = pd.to_datetime(row["TGL REGISTRASI"], dayfirst=True)
-    #         prev_date = self.normalize_workday(
-    #             pd.to_datetime(row["TGL REGISTRASI"], dayfirst=True, errors="coerce")
-    #             )
-
-    #     except:
-    #         return styles
-
-    #     sop_acc = 0  # total SOP yang harus dipenuhi sejak prev_date
-
-    #     for tahap in tahapan:
-    #         col_idx = row.index.get_loc(tahap)
-    #         sop_hari = self.SOP_TAHAPAN[tahap]
-    #         nilai = str(row[tahap]).strip()
-
-    #         # Jika tanggal TIDAK ada → hanya tambahkan SOP, prev_date tidak berubah
-    #         if nilai == "-" or nilai == "":
-    #             sop_acc += sop_hari
-    #             continue
-
-    #         # Jika tanggal ADA → hitung selisih
-    #         try:
-    #             # curr_date = pd.to_datetime(nilai, dayfirst=True)
-    #             curr_date = self.normalize_workday(
-    #                 pd.to_datetime(nilai, dayfirst=True, errors="coerce")
-    #                 )
-
-    #         except:
-    #             # Jika format salah dianggap tidak valid
-    #             sop_acc += sop_hari
-    #             continue
-
-    #         # Hitung selisih hari dari prev_date
-    #         # selisih = (curr_date - prev_date).days
-    #         selisih = self.hitung_hari_kerja(prev_date, curr_date)
-
-    #         # Jika selisih > total SOP yang ditentukan dari beberapa tahap sebelumnya
-    #         # if selisih > sop_acc + sop_hari:
-    #         # Hanya evaluasi jika tahap ini memang DIKERJAKAN
-    #         if nilai not in ["", "-"] and selisih > sop_acc + sop_hari:
-
-    #             styles[col_idx] = 'background-color: #fee2e2; color: #dc2626; font-weight: bold'
-
-    #         # Setelah tahap selesai → reset akumulasi SOP
-    #         sop_acc = 0
-    #         prev_date = curr_date  # update ke tanggal tahap valid terbaru
-    #         if curr_date is None or prev_date is None:
-    #             sop_acc += sop_hari
-    #             continue
-
-    #     return styles
-
     def highlight_terlambat(self, row):
-        # Jika masih diproses → jangan highlight apa pun
+        """Highlight berdasarkan SOP:
+            - Setiap tahap dihitung dari tanggal tahap sebelumnya.
+            - Tahap '-' tetap menambah akumulasi SOP.
+            - Tahap dengan tanggal dibandingkan total SOP sejak tahap valid sebelumnya.
+        """
         if row.get("STATUS") == "Diproses":
             return [''] * len(row)
 
         styles = [''] * len(row)
+
         tahapan = list(self.SOP_TAHAPAN.keys())
 
-        # Ambil tanggal registrasi sebagai titik awal
-        prev_date = pd.to_datetime(
-            row.get("TGL REGISTRASI"),
-            dayfirst=True,
-            errors="coerce"
-        )
+    # Ambil tanggal registrasi sebagai tahap awal
+        try:
+            # prev_date = pd.to_datetime(row["TGL REGISTRASI"], dayfirst=True)
+            prev_date = self.normalize_workday(
+                pd.to_datetime(row["TGL REGISTRASI"], dayfirst=True, errors="coerce")
+                )
 
-        if pd.isna(prev_date):
+        except:
             return styles
+
+        sop_acc = 0  # total SOP yang harus dipenuhi sejak prev_date
 
         for tahap in tahapan:
             col_idx = row.index.get_loc(tahap)
             sop_hari = self.SOP_TAHAPAN[tahap]
+            nilai = str(row[tahap]).strip()
 
-            nilai = str(row.get(tahap)).strip()
-
-        # Tahap kosong → dilewati
-            if nilai in ["", "-"]:
+            # Jika tanggal TIDAK ada → hanya tambahkan SOP, prev_date tidak berubah
+            if nilai == "-" or nilai == "":
+                sop_acc += sop_hari
                 continue
 
-            curr_date = pd.to_datetime(nilai, dayfirst=True, errors="coerce")
+            # Jika tanggal ADA → hitung selisih
+            try:
+                # curr_date = pd.to_datetime(nilai, dayfirst=True)
+                curr_date = self.normalize_workday(
+                    pd.to_datetime(nilai, dayfirst=True, errors="coerce")
+                    )
 
-            if pd.isna(curr_date):
+            except:
+                # Jika format salah dianggap tidak valid
+                sop_acc += sop_hari
                 continue
 
-            # Hitung SELISIH HARI KERJA
-            selisih_hari_kerja = self.hitung_hari_kerja(prev_date, curr_date)
+            # Hitung selisih hari dari prev_date
+            # selisih = (curr_date - prev_date).days
+            selisih = self.hitung_hari_kerja(prev_date, curr_date)
 
-            # Jika melebihi SOP tahap → merah
-            if selisih_hari_kerja > sop_hari:
-                styles[col_idx] = (
-                    'background-color: #fee2e2; '
-                    'color: #dc2626; '
-                    'font-weight: bold'
-                )
+            # Jika selisih > total SOP yang ditentukan dari beberapa tahap sebelumnya
+            # if selisih > sop_acc + sop_hari:
+            # Hanya evaluasi jika tahap ini memang DIKERJAKAN
+            if nilai not in ["", "-"] and selisih > sop_acc + sop_hari:
 
-            # Update tanggal acuan ke tahap ini
-            prev_date = curr_date
+                styles[col_idx] = 'background-color: #fee2e2; color: #dc2626; font-weight: bold'
+
+            # Setelah tahap selesai → reset akumulasi SOP
+            sop_acc = 0
+            prev_date = curr_date  # update ke tanggal tahap valid terbaru
+            if curr_date is None or prev_date is None:
+                sop_acc += sop_hari
+                continue
+
+        return styles
 
     def get_statistics(self) -> Dict:
         """Hitung statistik utama"""
@@ -1347,5 +1300,6 @@ document.body.style.transformOrigin = "0 0";
 if __name__ == "__main__":
     app = PBGMonitoringApp()
     app.run()
+
 
 
