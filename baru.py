@@ -226,7 +226,7 @@ class PBGMonitoringApp:
 
     #     return styles
 
-        def highlight_terlambat(self, row):
+    def highlight_terlambat(self, row):
         # Jika masih diproses → jangan highlight apa pun
         if row.get("STATUS") == "Diproses":
             return [''] * len(row)
@@ -1347,4 +1347,5 @@ document.body.style.transformOrigin = "0 0";
 if __name__ == "__main__":
     app = PBGMonitoringApp()
     app.run()
+
 
